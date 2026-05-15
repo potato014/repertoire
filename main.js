@@ -325,8 +325,18 @@ function renderFilterUI(songs) {
   });
 }
 
+function normalizeSearchText(text) {
+  if (!text) return '';
+  const normalized = text.toString().trim().normalize('NFKC').toLowerCase();
+  return convertKatakanaToHiragana(normalized);
+}
+
+function convertKatakanaToHiragana(text) {
+  return text.replace(/[ァ-ヶ]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0x60));
+}
+
 function getSearchQuery() {
-  return document.querySelector('#searchBox').value.toLowerCase();
+  return normalizeSearchText(document.querySelector('#searchBox').value);
 }
 
 function clearAllFilters(songs) {
@@ -343,16 +353,22 @@ function clearAllFilters(songs) {
 }
 
 function filterBySearch(songs, query, selectedGenre, selectedArtists = [], selectedWorks = []) {
+  const normalizedQuery = normalizeSearchText(query);
   return songs.filter(song => {
-    const matchesQuery = !query || 
-      song['タイトル'].toLowerCase().includes(query) || 
-      song['アーティスト'].toLowerCase().includes(query) ||
-      song['作品名'].toLowerCase().includes(query);
-    const matchesGenre = !selectedGenre || 
+    const title = normalizeSearchText(song['タイトル'] || '');
+    const artist = normalizeSearchText(song['アーティスト'] || '');
+    const work = normalizeSearchText(song['作品名'] || '');
+
+    const matchesQuery = !normalizedQuery ||
+      title.includes(normalizedQuery) ||
+      artist.includes(normalizedQuery) ||
+      work.includes(normalizedQuery);
+
+    const matchesGenre = !selectedGenre ||
       (song['ジャンル'] && song['ジャンル'].split('、').some(g => g.trim() === selectedGenre));
-    const matchesArtist = selectedArtists.length === 0 || 
+    const matchesArtist = selectedArtists.length === 0 ||
       (song['アーティスト'] && song['アーティスト'].split('、').some(a => selectedArtists.includes(a.trim())));
-    const matchesWork = selectedWorks.length === 0 || 
+    const matchesWork = selectedWorks.length === 0 ||
       (song['作品名'] && song['作品名'].split('、').some(w => selectedWorks.includes(w.trim())));
     return matchesQuery && matchesGenre && matchesArtist && matchesWork;
   });
