@@ -1,6 +1,9 @@
 // デバイス検出: スマホ/タブレットなら body に 'mobile-device' クラスを追加
 function isMobileDevice() {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const ua = navigator.userAgent || navigator.vendor || window.opera || '';
+  const hasMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+  const isNarrowScreen = window.matchMedia && window.matchMedia('(max-width: 700px)').matches;
+  return hasMobileUA || isNarrowScreen;
 }
 
 if (isMobileDevice()) {
@@ -307,9 +310,15 @@ function renderFilterUI(songs) {
     btn.textContent = genre;
     btn.dataset.genre = genre;
     btn.addEventListener('click', () => {
+      const isAlreadyActive = btn.classList.contains('active');
       document.querySelectorAll('.tag-button').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      renderCards(songs, genre, getSearchQuery(), getSelectedArtists(), getSelectedWorks());
+      if (isAlreadyActive) {
+        allBtn.classList.add('active');
+        renderCards(songs, '', getSearchQuery(), getSelectedArtists(), getSelectedWorks());
+      } else {
+        btn.classList.add('active');
+        renderCards(songs, genre, getSearchQuery(), getSelectedArtists(), getSelectedWorks());
+      }
     });
     filterDiv.appendChild(btn);
   });
