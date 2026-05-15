@@ -172,15 +172,32 @@ function renderDropdownUI(songs) {
   const artistBtn = document.querySelector('#artistBtn');
   const workBtn = document.querySelector('#workBtn');
 
+  const isMobileView = () => window.innerWidth <= 700;
+
+  const closeDropdowns = () => {
+    artistList.classList.remove('open', 'fullscreen');
+    workList.classList.remove('open', 'fullscreen');
+  };
+
   artistBtn.addEventListener('click', (event) => {
     artistList.classList.toggle('open');
-    workList.classList.remove('open');
+    workList.classList.remove('open', 'fullscreen');
+    if (isMobileView()) {
+      artistList.classList.toggle('fullscreen', artistList.classList.contains('open'));
+    } else {
+      artistList.classList.remove('fullscreen');
+    }
     event.stopPropagation();
   });
   
   workBtn.addEventListener('click', (event) => {
     workList.classList.toggle('open');
-    artistList.classList.remove('open');
+    artistList.classList.remove('open', 'fullscreen');
+    if (isMobileView()) {
+      workList.classList.toggle('fullscreen', workList.classList.contains('open'));
+    } else {
+      workList.classList.remove('fullscreen');
+    }
     event.stopPropagation();
   });
 
@@ -188,8 +205,14 @@ function renderDropdownUI(songs) {
     const target = event.target;
     if (!artistList.contains(target) && !artistBtn.contains(target) &&
         !workList.contains(target) && !workBtn.contains(target)) {
-      artistList.classList.remove('open');
-      workList.classList.remove('open');
+      closeDropdowns();
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    if (!isMobileView()) {
+      artistList.classList.remove('fullscreen');
+      workList.classList.remove('fullscreen');
     }
   });
 }
