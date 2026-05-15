@@ -1,60 +1,167 @@
 body {
-  background: repeating-linear-gradient(135deg, #b3e6ff 0 20px, #e0f7fa 20px 40px, #b3e6ff 40px 60px, #e0f7fa 60px 80px);
-  color: #222;
-  font-family: 'MS PGothic', 'Osaka', 'Arial', sans-serif;
+  min-height: 100vh;
+  background: url('nekocup.png') center/cover no-repeat fixed;
+  color: #4b2f3a;
+  font-family: 'Baloo 2', 'MS PGothic', 'Osaka', 'Arial', sans-serif;
   margin: 0;
   padding: 0;
 }
 .container {
-  background: #fffbe8;
-  border: 2px solid #c0a060;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(255, 197, 221, 0.7);
   margin: 32px auto;
-  padding: 24px;
-  max-width: 800px;
-  box-shadow: 0 0 16px #c0a060;
+  padding: 28px 26px;
+  max-width: 860px;
+  box-shadow: 0 20px 50px rgba(255, 182, 210, 0.22);
+  border-radius: 28px;
 }
 h1 {
-  font-size: 2em;
-  color: #c060a0;
-  text-shadow: 1px 1px 0 #fff, 2px 2px 0 #c0a060;
-  margin-bottom: 16px;
-}
-.filter {
-  margin-bottom: 16px;
-  display: flex;
-  gap: 32px;
-  align-items: flex-start;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px #e0e0e0;
-  padding: 16px 24px;
-  border: 2px solid #c0a060;
-  width: fit-content;
-}
-.checkbox-filter {
-  display: flex;
-  flex-direction: column;
-  margin-right: 24px;
-}
-.checkbox-title {
-  font-size: 1.1em;
-  color: #444;
-  font-weight: bold;
+  font-size: 2.4em;
+  color: #d24f7c;
+  text-shadow: 1px 1px 0 rgba(255,255,255,0.8);
+  letter-spacing: 0.02em;
   margin-bottom: 6px;
 }
-.checkbox-label {
+.filter {
+  display: none;
+}
+.subtitle {
+  text-align: center;
+  color: #ad5778;
+  font-size: 1.05em;
+  margin-bottom: 22px;
+}
+.search-box {
+  width: 100%;
+  padding: 14px 18px;
+  font-size: 1em;
+  border: 2px solid #ffc5dd;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  font-family: 'Baloo 2', 'MS PGothic', 'Osaka', 'Arial', sans-serif;
+  background: #fff5f9;
+  color: #6f3b55;
+}
+.search-box::placeholder {
+  color: #c77a9f;
+}
+.filter-dropdowns {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.filter-dropdown {
+  position: relative;
+  display: inline-block;
+  flex: 1 1 calc(50% - 8px);
+  min-width: 240px;
+}
+.dropdown-button {
+  width: 100%;
+  padding: 14px 20px;
+  border: 2px solid #ffc3dc;
+  border-radius: 18px;
+  background: #fff0f6;
+  color: #8e3a5a;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.8);
+  border-radius: 6px;
+  background: #fff8f0;
+  color: #666;
+  font-size: 0.95em;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'MS PGothic', 'Osaka', 'Arial', sans-serif;
+  font-weight: bold;
+}
+.dropdown-button:hover {
+  background: #ffd8ea;
+  color: #9b3d66;
+}
+.dropdown-arrow {
+  margin-left: 8px;
+  font-size: 0.85em;
+}
+.dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 2px solid #c0a060;
+  border-radius: 6px;
+  min-width: 150px;
+  max-height: 300px;
+  z-index: 1000;
+  display: none;
+  flex-direction: column;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.dropdown-list.open {
+  display: flex;
+}
+.dropdown-search {
+  padding: 8px 12px;
+  border: none;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 0.9em;
+  font-family: 'MS PGothic', 'Osaka', 'Arial', sans-serif;
+  background: #fafafa;
+}
+.dropdown-search::placeholder {
+  color: #999;
+}
+.dropdown-items-container {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: 250px;
+}
+.dropdown-item {
+  padding: 8px 12px;
   display: flex;
   align-items: center;
-  font-size: 1em;
-  margin-bottom: 4px;
+  font-size: 0.95em;
   cursor: pointer;
   user-select: none;
+  transition: background 0.2s;
 }
-.checkbox-label input[type="checkbox"] {
-  accent-color: #3a7c7c;
-  margin-right: 6px;
-  width: 16px;
-  height: 16px;
+.dropdown-item:hover {
+  background: #ffe0f0;
+}
+.dropdown-item input[type="checkbox"] {
+  margin-right: 8px;
+  accent-color: #0076d6;
+}
+.filter-tags {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.tag-button {
+  padding: 10px 18px;
+  border: 2px solid #ffc6dd;
+  border-radius: 16px;
+  background: #fff0f6;
+  color: #87526a;
+  font-size: 0.95em;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Baloo 2', 'MS PGothic', 'Osaka', 'Arial', sans-serif;
+  font-weight: 700;
+}
+.tag-button:hover {
+  background: #ffd9ea;
+  color: #9b3d64;
+}
+.tag-button.active {
+  background: #ff9fca;
+  color: white;
+  border-color: #ff88b9;
 }
 table {
   width: 100%;
@@ -85,46 +192,67 @@ img.youtube-thumb {
   margin: 2px 0;
 }
 .song-card {
-  background: #fff;
-  border: 2px solid #c0a060;
-  border-radius: 8px;
-  box-shadow: 2px 2px 8px #e0c080;
-  margin: 8px;
-  padding: 8px 4px 12px 4px;
-  text-align: center;
-  min-height: 220px;
+  background: #fff6fb;
+  border: 1px solid #ffccdf;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(255, 173, 204, 0.18);
+  margin: 8px 0;
+  padding: 18px 20px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  position: relative;
-  justify-content: flex-start;
-  height: 100%;
-  padding-top: 24px;
-  padding-bottom: 24px;
+  gap: 18px;
   box-sizing: border-box;
 }
-.song-title {
-  font-weight: bold;
-  font-size: 1.1em;
-  margin: 8px 0 2px 0;
-  color: #a04080;
-  text-shadow: 1px 1px 0 #fff;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  width: 90%;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+.song-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ffd8ea 0%, #fff1f8 100%);
+  border: 2px solid #ffb6d4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #c95078;
+  font-size: 1.5em;
+  flex-shrink: 0;
 }
-.song-artist, .song-category {
+.song-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+.song-title {
+  font-weight: 700;
+  font-size: 1.08em;
+  color: #7f2f52;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  width: 90%;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+}
+.song-artist {
+  color: #90546b;
+  font-size: 0.97em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.song-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.song-category {
+  background: #ffe5f1;
+  border: 1px solid #ffbed7;
+  border-radius: 14px;
+  padding: 6px 12px;
+  color: #b95378;
+  font-size: 0.88em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .yt-link {
   display: inline-block;
@@ -153,25 +281,11 @@ img.youtube-thumb {
   color: #bbb;
   font-size: 0.9em;
 }
-#songsTable {
-  table-layout: fixed;
-}
-#songsTable tr {
+.songs-list {
   display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-}
-#songsTable td {
-  flex: 1 1 0;
-  min-width: 0;
-  max-width: 25%;
-  box-sizing: border-box;
-  vertical-align: top;
-  background: transparent;
-  border: none;
-}
-#songsTable thead {
-  display: none;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
 }
 .no-result-message {
   text-align: center;
@@ -190,29 +304,17 @@ img.youtube-thumb {
   box-shadow: 0 2px 8px #e0e0e0;
 }
 .colorful-title {
-  font-size: 4.2em;
+  font-size: 2.5em;
   font-weight: bold;
-  line-height: 1.05;
   text-align: center;
-  letter-spacing: 0.04em;
-  background: linear-gradient(90deg, #ffea00 10%, #ff00c8 40%, #00eaff 70%, #ffea00 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(2px 2px 0 #7f00ff)
-          drop-shadow(4px 4px 0 #ff3c00)
-          drop-shadow(0 0 8px #fff200);
-  text-shadow:
-    2px 2px 0 #7f00ff,
-    4px 4px 0 #ff3c00,
-    0 0 8px #fff200,
-    0 0 2px #fff;
-  margin-bottom: 32px;
+  color: #333;
+  margin-bottom: 8px;
   margin-top: 12px;
-  padding: 0.2em 0 0.2em 0;
-  border-radius: 0.2em;
-  animation: colorful-pop 1.2s cubic-bezier(.68,-0.55,.27,1.55);
-  transform: skew(-8deg, 0deg);
+  text-shadow: none;
+  background: none;
+  filter: none;
+  animation: none;
+  transform: none;
 }
 @media (max-width: 600px) {
   .colorful-title {

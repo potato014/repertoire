@@ -54,50 +54,202 @@ function getUniqueValuesMulti(songs, key) {
   return [...set];
 }
 
-function createCheckboxFilter(id, label, values) {
-  const container = document.createElement('div');
-  container.className = 'checkbox-filter';
-  const title = document.createElement('div');
-  title.className = 'checkbox-title';
-  title.textContent = label;
-  container.appendChild(title);
-  values.forEach(val => {
-    const labelEl = document.createElement('label');
-    labelEl.className = 'checkbox-label';
-    const input = document.createElement('input');
-    input.type = 'checkbox';
-    input.value = val;
-    input.name = id;
-    labelEl.appendChild(input);
-    labelEl.appendChild(document.createTextNode(truncateText(val, 14)));
-    container.appendChild(labelEl);
+function getGenreCounts(songs) {
+  const counts = {};
+  songs.forEach(song => {
+    if (song['ジャンル']) {
+      song['ジャンル'].split('、').forEach(val => {
+        const genre = val.trim();
+        if (!genre) return;
+        counts[genre] = (counts[genre] || 0) + 1;
+      });
+    }
   });
-  return container;
+  return counts;
 }
 
-function getCheckedValues(name) {
-  return Array.from(document.querySelectorAll(`input[name='${name}']:checked`)).map(cb => cb.value);
+function sortGenreValues(genreValues, counts) {
+  const groupA = ['アニソン', 'アイドル', 'J-POP', 'ドラマ', '邦ロック', 'ボカロ', '声優', '演歌', '昭和歌謡', '洋楽', 'K-POP'];
+  const groupB = ['アイマス', 'デレマス', '学マス'];
+  const groupC = ['ハロプロ', 'VTuber • Vsinger', 'プリキュア', 'ラブライブ！', 'ナナシス', 'ディズニー', 'サンリオ'];
+  const groupsSet = new Set([...groupA, ...groupB, ...groupC]);
+
+  const availableSet = new Set(genreValues);
+  const groupAList = groupA.filter(g => availableSet.has(g)).sort((a, b) => (counts[b] || 0) - (counts[a] || 0));
+  const groupBList = groupB.filter(g => availableSet.has(g));
+  const groupCList = groupC.filter(g => availableSet.has(g)).sort((a, b) => (counts[b] || 0) - (counts[a] || 0));
+  const remaining = genreValues
+    .filter(g => !groupsSet.has(g))
+    .sort((a, b) => (counts[b] || 0) - (counts[a] || 0));
+
+  return [...groupAList, ...groupBList, ...groupCList, ...remaining];
+}
+
+function renderDropdownUI(songs) {
+  const artistList = document.querySelector('#artistList');
+  const workList = document.querySelector('#workList');
+  artistList.innerHTML = '';
+  workList.innerHTML = '';
+  
+  let artists = getUniqueValuesMulti(songs, 'アーティスト');
+  let works = getUniqueValuesMulti(songs, '作品名');
+  
+  // 日本語五十音順でソート
+  const collator = new Intl.Collator('ja');
+  artists.sort((a, b) => collator.compare(a, b));
+  works.sort((a, b) => collator.compare(a, b));
+  
+  // アーティストドロップダウン検索ボックス
+  const artistSearchBox = document.createElement('input');
+  artistSearchBox.type = 'text';
+  artistSearchBox.className = 'dropdown-search';
+  artistSearchBox.placeholder = '検索...';
+  artistList.appendChild(artistSearchBox);
+  
+  // アーティストアイテムコンテナ
+  const artistItemsContainer = document.createElement('div');
+  artistItemsContainer.className = 'dropdown-items-container';
+  artistList.appendChild(artistItemsContainer);
+  
+  artists.forEach(artist => {
+    const label = document.createElement('label');
+    label.className = 'dropdown-item';
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.value = artist;
+    input.name = 'artist-filter';
+    input.addEventListener('change', () => {
+      renderCards(songs, getSelectedGenre(), getSearchQuery(), getSelectedArtists(), getSelectedWorks());
+    });
+    label.appendChild(input);
+    label.appendChild(document.createTextNode(artist));
+    artistItemsContainer.appendChild(label);
+  });
+  
+  artistSearchBox.addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase();
+    document.querySelectorAll('#artistList .dropdown-item').forEach(item => {
+      const text = item.textContent.toLowerCase();
+      item.style.display = text.includes(query) ? 'flex' : 'none';
+    });
+  });
+  
+  // 作品名ドロップダウン検索ボックス
+  const workSearchBox = document.createElement('input');
+  workSearchBox.type = 'text';
+  workSearchBox.className = 'dropdown-search';
+  workSearchBox.placeholder = '検索...';
+  workList.appendChild(workSearchBox);
+  
+  // 作品名アイテムコンテナ
+  const workItemsContainer = document.createElement('div');
+  workItemsContainer.className = 'dropdown-items-container';
+  workList.appendChild(workItemsContainer);
+  
+  works.forEach(work => {
+    const label = document.createElement('label');
+    label.className = 'dropdown-item';
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.value = work;
+    input.name = 'work-filter';
+    input.addEventListener('change', () => {
+      renderCards(songs, getSelectedGenre(), getSearchQuery(), getSelectedArtists(), getSelectedWorks());
+    });
+    label.appendChild(input);
+    label.appendChild(document.createTextNode(work));
+    workItemsContainer.appendChild(label);
+  });
+  
+  workSearchBox.addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase();
+    document.querySelectorAll('#workList .dropdown-item').forEach(item => {
+      const text = item.textContent.toLowerCase();
+      item.style.display = text.includes(query) ? 'flex' : 'none';
+    });
+  });
+  
+  document.querySelector('#artistBtn').addEventListener('click', () => {
+    artistList.classList.toggle('open');
+  });
+  
+  document.querySelector('#workBtn').addEventListener('click', () => {
+    workList.classList.toggle('open');
+  });
+}
+
+function getSelectedArtists() {
+  return Array.from(document.querySelectorAll('input[name="artist-filter"]:checked')).map(cb => cb.value);
+}
+
+function getSelectedWorks() {
+  return Array.from(document.querySelectorAll('input[name="work-filter"]:checked')).map(cb => cb.value);
+}
+
+function getSelectedGenre() {
+  const activeBtn = document.querySelector('.tag-button.active');
+  return activeBtn?.dataset.genre || '';
 }
 
 function renderFilterUI(songs) {
-  const filterDiv = document.querySelector('.filter');
+
+  const filterDiv = document.querySelector('#filterTags');
   filterDiv.innerHTML = '';
-  const artistValues = getUniqueValuesMulti(songs, 'アーティスト');
-  const workValues = getUniqueValuesMulti(songs, '作品名');
-  const genreValues = getUniqueValuesMulti(songs, 'ジャンル');
-  filterDiv.appendChild(createCheckboxFilter('artist', 'アーティスト', artistValues));
-  filterDiv.appendChild(createCheckboxFilter('work', '作品名', workValues));
-  filterDiv.appendChild(createCheckboxFilter('genre', 'ジャンル', genreValues));
+  const genreValues = sortGenreValues(getUniqueValuesMulti(songs, 'ジャンル'), getGenreCounts(songs));
+  
+  const allBtn = document.createElement('button');
+  allBtn.className = 'tag-button active';
+  allBtn.textContent = 'すべて';
+  allBtn.dataset.genre = '';
+  allBtn.addEventListener('click', () => {
+    document.querySelectorAll('.tag-button').forEach(b => b.classList.remove('active'));
+    allBtn.classList.add('active');
+    renderCards(songs, '', getSearchQuery(), getSelectedArtists(), getSelectedWorks());
+  });
+  filterDiv.appendChild(allBtn);
+  
+  genreValues.forEach(genre => {
+    const btn = document.createElement('button');
+    btn.className = 'tag-button';
+    btn.textContent = genre;
+    btn.dataset.genre = genre;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tag-button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderCards(songs, genre, getSearchQuery(), getSelectedArtists(), getSelectedWorks());
+    });
+    filterDiv.appendChild(btn);
+  });
 }
 
-function renderCards(songs) {
-  const tbody = document.querySelector('#songsTable tbody');
-  tbody.innerHTML = '';
+function getSearchQuery() {
+  return document.querySelector('#searchBox').value.toLowerCase();
+}
+
+function filterBySearch(songs, query, selectedGenre, selectedArtists = [], selectedWorks = []) {
+  return songs.filter(song => {
+    const matchesQuery = !query || 
+      song['タイトル'].toLowerCase().includes(query) || 
+      song['アーティスト'].toLowerCase().includes(query) ||
+      song['作品名'].toLowerCase().includes(query);
+    const matchesGenre = !selectedGenre || 
+      (song['ジャンル'] && song['ジャンル'].split('、').some(g => g.trim() === selectedGenre));
+    const matchesArtist = selectedArtists.length === 0 || 
+      (song['アーティスト'] && song['アーティスト'].split('、').some(a => selectedArtists.includes(a.trim())));
+    const matchesWork = selectedWorks.length === 0 || 
+      (song['作品名'] && song['作品名'].split('、').some(w => selectedWorks.includes(w.trim())));
+    return matchesQuery && matchesGenre && matchesArtist && matchesWork;
+  });
+}
+
+function renderCards(songs, selectedGenre = '', searchQuery = '', selectedArtists = [], selectedWorks = []) {
+  const filteredSongs = filterBySearch(songs, searchQuery, selectedGenre, selectedArtists, selectedWorks);
+  const list = document.querySelector('#songsList');
+  list.innerHTML = '';
   // メッセージ用要素があれば削除
   const oldMsg = document.getElementById('no-result-message-outer');
   if (oldMsg) oldMsg.remove();
-  if (songs.length === 0) {
-    // テーブル外にメッセージを表示
+  if (filteredSongs.length === 0) {
     const container = document.querySelector('.container');
     const msgDiv = document.createElement('div');
     msgDiv.id = 'no-result-message-outer';
@@ -105,73 +257,30 @@ function renderCards(songs) {
     msgDiv.innerHTML = '<div class="no-result-message-inner">該当する曲がありません。<br>フィルター条件を変更してください。</div>';
     container.appendChild(msgDiv);
     return;
-  } else {
-    // 曲がある場合はメッセージを消す
-    const oldMsg = document.getElementById('no-result-message-outer');
-    if (oldMsg) oldMsg.remove();
   }
-  let tr = document.createElement('tr');
-  let rowTds = [];
-  songs.forEach((song, i) => {
-    const td = document.createElement('td');
-    td.style.width = '25%';
-    td.style.verticalAlign = 'top';
-    // 旧CSV対応
-    let link = song['リンク'] || '';
-    // YouTubeリンクが "https://" で始まらない場合は補完
-    if (link && !/^https?:\/\//.test(link)) {
-      link = 'https://' + link;
-    }
+
+  filteredSongs.forEach(song => {
     const work = song['作品名'] || '';
     const genre = song['ジャンル'] || '';
-    const thumbUrl = getYouTubeThumbnail(link);
-    let thumbHtml = '';
-    if (link && thumbUrl) {
-      thumbHtml = `<a href="${link}" target="_blank"><img class="youtube-thumb" src="${thumbUrl}" alt="YouTubeサムネ" onerror=\"this.onerror=null;this.parentNode.innerHTML='<a href='${link}' target='_blank'><div class=\\'youtube-thumb no-thumb\\'>No Image</div></a>'\"></a>`;
-    } else if (link) {
-      thumbHtml = `<a href="${link}" target="_blank" style="text-decoration:none;"><div class='youtube-thumb no-thumb'>No Image</div></a>`;
-    } else {
-      thumbHtml = `<div class='youtube-thumb no-thumb'>No Image</div>`;
-    }
-    td.innerHTML = `
-      <div class="song-card">
-        ${thumbHtml}
-        <div class="song-title">${truncateText(song['タイトル'] || '', 18)}</div>
-        <div class="song-artist">${truncateText(song['アーティスト'] || '', 14)}</div>
-        <div class="song-category">${truncateText(work, 14)}</div>
-        <div class="song-category">${truncateText(genre, 10)}</div>
+    const artist = song['アーティスト'] || '';
+    const card = document.createElement('div');
+    card.className = 'song-card';
+    const titleHtml = `<div class="song-title">${truncateText(song['タイトル'] || '', 18)}</div>`;
+    const artistHtml = artist ? `<div class="song-artist">${truncateText(artist, 18)}</div>` : '';
+    const details = [];
+    if (work) details.push(`<span class="song-category">${truncateText(work, 16)}</span>`);
+    if (genre) details.push(`<span class="song-category">${truncateText(genre, 12)}</span>`);
+    const detailsHtml = details.length ? `<div class="song-details">${details.join('')}</div>` : '';
+    card.innerHTML = `
+      <div class="song-icon">♪</div>
+      <div class="song-content">
+        ${titleHtml}
+        ${artistHtml}
+        ${detailsHtml}
       </div>
     `;
-    rowTds.push(td);
-    if ((i + 1) % 4 === 0) {
-      // 高さを揃える
-      let maxHeight = 0;
-      rowTds.forEach(cell => {
-        const card = cell.querySelector('.song-card');
-        if (card.offsetHeight > maxHeight) maxHeight = card.offsetHeight;
-      });
-      rowTds.forEach(cell => {
-        cell.querySelector('.song-card').style.height = maxHeight + 'px';
-      });
-      rowTds.forEach(cell => tr.appendChild(cell));
-      tbody.appendChild(tr);
-      tr = document.createElement('tr');
-      rowTds = [];
-    }
+    list.appendChild(card);
   });
-  if (rowTds.length > 0) {
-    // 最終行の高さを揃える
-    let maxHeight = 0;
-    rowTds.forEach(cell => {
-      const card = cell.querySelector('.song-card');
-      if (card.offsetHeight > maxHeight) maxHeight = card.offsetHeight;
-    });
-    rowTds.forEach(cell => {
-      cell.querySelector('.song-card').style.height = maxHeight + 'px';
-    });
-    rowTds.forEach(cell => tr.appendChild(cell));
-    tbody.appendChild(tr);
-  }
 }
 
 function filterSongs(songs) {
@@ -199,11 +308,10 @@ fetch('songs.csv')
   .then(res => res.text())
   .then(text => {
     const songs = parseCSV(text);
+    renderDropdownUI(songs);
     renderFilterUI(songs);
     renderCards(songs);
-    document.querySelectorAll('.checkbox-filter input[type=checkbox]').forEach(cb => {
-      cb.addEventListener('change', () => {
-        renderCards(filterSongs(songs));
-      });
+    document.querySelector('#searchBox').addEventListener('input', (e) => {
+      renderCards(songs, getSelectedGenre(), e.target.value.toLowerCase(), getSelectedArtists(), getSelectedWorks());
     });
   });

@@ -3,29 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <title>カラオケ曲リスト</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h1 class="colorful-title">黒猫歌手<br>の<br>歌唱リスト</h1>
-    <!-- <h1>カラオケ曲リスト</h1> -->
-    <div class="filter">
-      <label>アーティスト: <select id="artistFilter"></select></label>
-      <label>作品名: <select id="workFilter"></select></label>
-      <label>ジャンル: <select id="genreFilter"></select></label>
+    <h1 class="colorful-title">♥しゅしゅの歌える楽曲リスト♥</h1>
+    <p class="subtitle">歌唱実習リクエストの参考にしてね♪</p>
+    <input type="text" id="searchBox" class="search-box" placeholder="タイトル、アーティスト、作品名で検索...">
+    <div class="filter-dropdowns">
+      <div class="filter-dropdown">
+        <button class="dropdown-button" id="artistBtn">アーティスト <span class="dropdown-arrow">▼</span></button>
+        <div class="dropdown-list" id="artistList"></div>
+      </div>
+      <div class="filter-dropdown">
+        <button class="dropdown-button" id="workBtn">作品名 <span class="dropdown-arrow">▼</span></button>
+        <div class="dropdown-list" id="workList"></div>
+      </div>
     </div>
-    <table id="songsTable">
-      <thead>
-        <tr>
-          <th>タイトル</th>
-          <th>アーティスト</th>
-          <th>カテゴリ</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- 曲リストがここに入る -->
-      </tbody>
-    </table>
+    <div class="filter-tags" id="filterTags"></div>
+    <div id="songsList" class="songs-list"></div>
   </div>
   <script src="main.js"></script>
 </body>
