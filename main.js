@@ -169,12 +169,28 @@ function renderDropdownUI(songs) {
     });
   });
   
-  document.querySelector('#artistBtn').addEventListener('click', () => {
+  const artistBtn = document.querySelector('#artistBtn');
+  const workBtn = document.querySelector('#workBtn');
+
+  artistBtn.addEventListener('click', (event) => {
     artistList.classList.toggle('open');
+    workList.classList.remove('open');
+    event.stopPropagation();
   });
   
-  document.querySelector('#workBtn').addEventListener('click', () => {
+  workBtn.addEventListener('click', (event) => {
     workList.classList.toggle('open');
+    artistList.classList.remove('open');
+    event.stopPropagation();
+  });
+
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!artistList.contains(target) && !artistBtn.contains(target) &&
+        !workList.contains(target) && !workBtn.contains(target)) {
+      artistList.classList.remove('open');
+      workList.classList.remove('open');
+    }
   });
 }
 
@@ -224,6 +240,19 @@ function renderFilterUI(songs) {
 
 function getSearchQuery() {
   return document.querySelector('#searchBox').value.toLowerCase();
+}
+
+function clearAllFilters(songs) {
+  const searchBox = document.querySelector('#searchBox');
+  searchBox.value = '';
+  document.querySelectorAll('#artistList, #workList').forEach(el => el.classList.remove('open'));
+  document.querySelectorAll('input[name="artist-filter"], input[name="work-filter"]').forEach(cb => cb.checked = false);
+  document.querySelectorAll('#artistList .dropdown-search, #workList .dropdown-search').forEach(input => input.value = '');
+  document.querySelectorAll('#artistList .dropdown-item, #workList .dropdown-item').forEach(item => item.style.display = 'flex');
+  document.querySelectorAll('.tag-button').forEach(btn => btn.classList.remove('active'));
+  const allBtn = document.querySelector('.tag-button[data-genre=""]');
+  if (allBtn) allBtn.classList.add('active');
+  renderCards(songs);
 }
 
 function filterBySearch(songs, query, selectedGenre, selectedArtists = [], selectedWorks = []) {
@@ -313,5 +342,8 @@ fetch('songs.csv')
     renderCards(songs);
     document.querySelector('#searchBox').addEventListener('input', (e) => {
       renderCards(songs, getSelectedGenre(), e.target.value.toLowerCase(), getSelectedArtists(), getSelectedWorks());
+    });
+    document.querySelector('#clearFiltersBtn').addEventListener('click', () => {
+      clearAllFilters(songs);
     });
   });

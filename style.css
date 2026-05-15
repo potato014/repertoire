@@ -87,53 +87,80 @@ h1 {
 }
 .dropdown-list {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 8px);
   left: 0;
-  background: white;
-  border: 2px solid #c0a060;
-  border-radius: 6px;
-  min-width: 150px;
-  max-height: 300px;
+  width: 100%;
+  background: #fff7fb;
+  border: 2px solid #ffc6dd;
+  border-radius: 18px;
+  min-width: 180px;
+  max-height: 320px;
   z-index: 1000;
   display: none;
   flex-direction: column;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 14px 40px rgba(255, 151, 201, 0.18);
 }
 .dropdown-list.open {
   display: flex;
 }
 .dropdown-search {
-  padding: 8px 12px;
-  border: none;
-  border-bottom: 1px solid #e0e0e0;
-  font-size: 0.9em;
+  padding: 10px 14px;
+  border: 1px solid #ffd2e7;
+  border-radius: 14px;
+  margin: 10px;
+  font-size: 0.95em;
   font-family: 'MS PGothic', 'Osaka', 'Arial', sans-serif;
-  background: #fafafa;
+  background: #fff5f9;
 }
 .dropdown-search::placeholder {
-  color: #999;
+  color: #b37a9d;
 }
 .dropdown-items-container {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
   max-height: 250px;
+  padding: 8px 10px 12px;
 }
 .dropdown-item {
-  padding: 8px 12px;
+  padding: 10px 12px;
   display: flex;
   align-items: center;
+  gap: 8px;
   font-size: 0.95em;
   cursor: pointer;
   user-select: none;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.15s;
+  border-radius: 14px;
+  margin: 4px 0;
+  background: #fff0f6;
 }
 .dropdown-item:hover {
-  background: #ffe0f0;
+  background: #ffe5f1;
+  transform: translateX(2px);
 }
 .dropdown-item input[type="checkbox"] {
-  margin-right: 8px;
-  accent-color: #0076d6;
+  margin: 0;
+  accent-color: #d65e98;
+}
+.filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 18px;
+}
+.clear-filters-button {
+  border: 2px solid #ffc6dd;
+  border-radius: 16px;
+  background: #fff0f6;
+  color: #87526a;
+  padding: 10px 18px;
+  font-size: 0.95em;
+  cursor: pointer;
+  font-family: 'Baloo 2', 'MS PGothic', 'Osaka', 'Arial', sans-serif;
+  transition: background 0.2s;
+}
+.clear-filters-button:hover {
+  background: #ffd9ea;
 }
 .filter-tags {
   display: flex;
