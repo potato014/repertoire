@@ -370,3 +370,40 @@ fetch('songs.csv')
       clearAllFilters(songs);
     });
   });
+
+// 背景画像のタイルをcanvasで描画し、境目を隠すために偶数枚目を反転
+const canvas = document.createElement('canvas');
+canvas.style.position = 'fixed';
+canvas.style.top = '0';
+canvas.style.left = '0';
+canvas.style.width = '100%';
+canvas.style.height = '100%';
+canvas.style.zIndex = '-1';
+document.body.insertBefore(canvas, document.body.firstChild);
+
+const ctx = canvas.getContext('2d');
+const img = new Image();
+img.src = 'img/nekocup.png';
+
+function drawBackground() {
+  const tileWidth = img.width;
+  const tileHeight = img.height;
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  for (let j = 0, y = 0; y < canvas.height; y += tileHeight, j++) {
+    for (let x = 0; x < canvas.width; x += tileWidth) {
+      ctx.save();
+      if (j % 2 === 1) {
+        ctx.scale(1, -1);
+        ctx.translate(x, -y - tileHeight);
+      } else {
+        ctx.translate(x, y);
+      }
+      ctx.drawImage(img, 0, 0, tileWidth, tileHeight);
+      ctx.restore();
+    }
+  }
+}
+
+img.onload = drawBackground;
+window.addEventListener('resize', drawBackground);
