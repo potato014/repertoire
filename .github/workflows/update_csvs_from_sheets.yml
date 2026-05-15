@@ -12,10 +12,10 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
@@ -26,13 +26,13 @@ jobs:
         run: |
           echo "${{ secrets.GSHEET_CREDENTIALS_B64 }}" | base64 -d > service_account.json
 
-      - name: Update CSVs from Google Sheets (With Retry)
-        uses: Wasm/action-retry@v2
+      - name: Update CSVs from Google Sheets
+        uses: nick-fields/retry@v3
         with:
-          action: ""
+          timeout_minutes: 5
+          max_attempts: 3
+          retry_wait_seconds: 15
           command: python scripts/update_csvs_from_sheets.py "${{ secrets.GSHEET_URL }}" "service_account.json"
-          attempt_limit: 3
-          attempt_delay: 10000
 
       - name: Commit and push changes
         run: |
