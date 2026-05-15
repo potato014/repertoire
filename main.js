@@ -310,7 +310,8 @@ function renderFilterUI(songs) {
     btn.textContent = genre;
     btn.dataset.genre = genre;
     btn.addEventListener('click', () => {
-      const isAlreadyActive = btn.classList.contains('active');
+      const currentlySelectedGenre = getSelectedGenre();
+      const isAlreadyActive = currentlySelectedGenre === genre;
       document.querySelectorAll('.tag-button').forEach(b => b.classList.remove('active'));
       if (isAlreadyActive) {
         allBtn.classList.add('active');
