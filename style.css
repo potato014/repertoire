@@ -468,3 +468,123 @@ img.youtube-thumb {
   60% { transform: scale(1.15) rotate(2deg) skew(-8deg, 0deg); opacity: 1; }
   100% { transform: scale(1) rotate(0deg) skew(-8deg, 0deg); }
 }
+
+/* スマホデバイス専用スタイル */
+.mobile-device .container {
+  margin: 10px;
+  padding: 20px 15px;
+  max-width: none;
+  border-radius: 20px;
+}
+
+.mobile-device .colorful-title {
+  font-size: 2.2em;
+  margin-bottom: 10px;
+}
+
+.mobile-device .subtitle {
+  font-size: 1.1em;
+  margin-bottom: 20px;
+}
+
+.mobile-device .search-box {
+  padding: 18px 16px;
+  font-size: 1.1em;
+  border-radius: 20px;
+  margin-bottom: 25px;
+}
+
+.mobile-device .dropdown-button {
+  padding: 18px 20px;
+  font-size: 1.1em;
+  border-radius: 20px;
+  min-height: 50px; /* タッチターゲット44px以上 */
+}
+
+.mobile-device .dropdown-list {
+  border-radius: 20px;
+}
+
+.mobile-device .dropdown-search {
+  padding: 14px 16px;
+  font-size: 1em;
+  margin: 12px;
+  border-radius: 16px;
+}
+
+.mobile-device .dropdown-item {
+  padding: 16px 14px;
+  font-size: 1em;
+  border-radius: 16px;
+  min-height: 48px; /* タッチターゲット */
+}
+
+.mobile-device .clear-filters-button {
+  padding: 16px 20px;
+  font-size: 1.1em;
+  border-radius: 18px;
+  min-height: 50px;
+}
+
+.mobile-device .tag-button {
+  padding: 16px 20px;
+  font-size: 1em;
+  border-radius: 18px;
+  min-height: 48px;
+}
+
+.mobile-device .song-card {
+  padding: 20px 18px;
+  border-radius: 24px;
+  gap: 16px;
+}
+
+.mobile-device .song-icon {
+  width: 64px;
+  height: 64px;
+  font-size: 1.6em;
+}
+
+.mobile-device .song-title {
+  font-size: 1.15em;
+}
+
+.mobile-device .song-artist {
+  font-size: 1.05em;
+}
+
+.mobile-device .song-category {
+  padding: 8px 14px;
+  font-size: 0.95em;
+  border-radius: 16px;
+}
+
+.mobile-device .yt-link {
+  padding: 8px 14px;
+  font-size: 1em;
+  border-radius: 8px;
+}
+
+.dropdown-close-btn {
+  background: #ff6b9d;
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  font-size: 1em;
+  border-radius: 16px;
+  cursor: pointer;
+  margin: 10px;
+  align-self: flex-start;
+  min-height: 44px;
+}
+
+.dropdown-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1999;
+  display: none;
+}

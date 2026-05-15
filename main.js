@@ -1,4 +1,11 @@
-// 2000年代オタク風 好きな曲リスト main.js
+// デバイス検出: スマホ/タブレットなら body に 'mobile-device' クラスを追加
+function isMobileDevice() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+if (isMobileDevice()) {
+  document.body.classList.add('mobile-device');
+}
 function getYouTubeId(url) {
   // v=ID 形式 or youtu.be/ID 形式両対応
   let match = url.match(/[?&]v=([\w-]+)/);
@@ -174,9 +181,14 @@ function renderDropdownUI(songs) {
 
   const isMobileView = () => window.innerWidth <= 700;
 
-  const closeDropdowns = () => {
+  const closeDropdownsLocal = () => {
     artistList.classList.remove('open', 'fullscreen');
     workList.classList.remove('open', 'fullscreen');
+    // 閉じるボタンを削除
+    const closeBtns = document.querySelectorAll('.dropdown-close-btn');
+    closeBtns.forEach(btn => btn.remove());
+    // 背景を隠す
+    dropdownBackdrop.style.display = 'none';
   };
 
   artistBtn.addEventListener('click', (event) => {
@@ -184,8 +196,27 @@ function renderDropdownUI(songs) {
     workList.classList.remove('open', 'fullscreen');
     if (isMobileView()) {
       artistList.classList.toggle('fullscreen', artistList.classList.contains('open'));
+      if (artistList.classList.contains('fullscreen')) {
+        dropdownBackdrop.style.display = 'block';
+        // 閉じるボタンを追加
+        let closeBtn = artistList.querySelector('.dropdown-close-btn');
+        if (!closeBtn) {
+          closeBtn = document.createElement('button');
+          closeBtn.className = 'dropdown-close-btn';
+          closeBtn.textContent = '✕ 閉じる';
+          closeBtn.addEventListener('click', closeDropdownsLocal);
+          artistList.insertBefore(closeBtn, artistList.firstChild);
+        }
+      } else {
+        dropdownBackdrop.style.display = 'none';
+        const closeBtn = artistList.querySelector('.dropdown-close-btn');
+        if (closeBtn) closeBtn.remove();
+      }
     } else {
       artistList.classList.remove('fullscreen');
+      dropdownBackdrop.style.display = 'none';
+      const closeBtn = artistList.querySelector('.dropdown-close-btn');
+      if (closeBtn) closeBtn.remove();
     }
     event.stopPropagation();
   });
@@ -195,8 +226,27 @@ function renderDropdownUI(songs) {
     artistList.classList.remove('open', 'fullscreen');
     if (isMobileView()) {
       workList.classList.toggle('fullscreen', workList.classList.contains('open'));
+      if (workList.classList.contains('fullscreen')) {
+        dropdownBackdrop.style.display = 'block';
+        // 閉じるボタンを追加
+        let closeBtn = workList.querySelector('.dropdown-close-btn');
+        if (!closeBtn) {
+          closeBtn = document.createElement('button');
+          closeBtn.className = 'dropdown-close-btn';
+          closeBtn.textContent = '✕ 閉じる';
+          closeBtn.addEventListener('click', closeDropdownsLocal);
+          workList.insertBefore(closeBtn, workList.firstChild);
+        }
+      } else {
+        dropdownBackdrop.style.display = 'none';
+        const closeBtn = workList.querySelector('.dropdown-close-btn');
+        if (closeBtn) closeBtn.remove();
+      }
     } else {
       workList.classList.remove('fullscreen');
+      dropdownBackdrop.style.display = 'none';
+      const closeBtn = workList.querySelector('.dropdown-close-btn');
+      if (closeBtn) closeBtn.remove();
     }
     event.stopPropagation();
   });
@@ -205,7 +255,7 @@ function renderDropdownUI(songs) {
     const target = event.target;
     if (!artistList.contains(target) && !artistBtn.contains(target) &&
         !workList.contains(target) && !workBtn.contains(target)) {
-      closeDropdowns();
+      closeDropdownsLocal();
     }
   });
 
@@ -213,6 +263,10 @@ function renderDropdownUI(songs) {
     if (!isMobileView()) {
       artistList.classList.remove('fullscreen');
       workList.classList.remove('fullscreen');
+      dropdownBackdrop.style.display = 'none';
+      // 閉じるボタン削除
+      const closeBtns = document.querySelectorAll('.dropdown-close-btn');
+      closeBtns.forEach(btn => btn.remove());
     }
   });
 }
@@ -407,3 +461,24 @@ function drawBackground() {
 
 img.onload = drawBackground;
 window.addEventListener('resize', drawBackground);
+
+// ドロップダウンの背景オーバーレイ
+const dropdownBackdrop = document.createElement('div');
+dropdownBackdrop.className = 'dropdown-backdrop';
+dropdownBackdrop.addEventListener('click', () => {
+  closeDropdowns();
+});
+document.body.appendChild(dropdownBackdrop);
+
+// closeDropdowns をグローバルに定義
+function closeDropdowns() {
+  const artistList = document.querySelector('#artistList');
+  const workList = document.querySelector('#workList');
+  artistList.classList.remove('open', 'fullscreen');
+  workList.classList.remove('open', 'fullscreen');
+  // 閉じるボタンを削除
+  const closeBtns = document.querySelectorAll('.dropdown-close-btn');
+  closeBtns.forEach(btn => btn.remove());
+  // 背景を隠す
+  dropdownBackdrop.style.display = 'none';
+}
