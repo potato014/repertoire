@@ -23,12 +23,49 @@ function getYouTubeThumbnail(url) {
 }
 
 function parseCSV(text) {
-  const lines = text.trim().split('\n');
-  const headers = lines[0].replace(/\r/g, '').split(',');
-  return lines.slice(1).map(line => {
-    const cols = line.replace(/\r/g, '').split(',');
+  // Simple RFC4180-like CSV parser supporting quoted fields with commas/newlines
+  const rows = [];
+  let cur = '';
+  let row = [];
+  let inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === '"') {
+      if (inQuotes && text[i + 1] === '"') {
+        cur += '"';
+        i++; // skip escaped quote
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (ch === ',' && !inQuotes) {
+      row.push(cur);
+      cur = '';
+    } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+      // handle CRLF
+      if (ch === '\r' && text[i + 1] === '\n') continue;
+      row.push(cur);
+      rows.push(row);
+      row = [];
+      cur = '';
+    } else {
+      cur += ch;
+    }
+  }
+  // push last field/row
+  if (cur !== '' || row.length) {
+    row.push(cur);
+    rows.push(row);
+  }
+
+  if (rows.length === 0) return [];
+  const headers = rows.shift().map(h => h.replace(/\r/g, '').trim());
+  return rows.map(cols => {
     const obj = {};
-    headers.forEach((h, i) => obj[h] = cols[i] || '');
+    headers.forEach((h, i) => {
+      let v = cols[i] !== undefined ? cols[i] : '';
+      v = v.replace(/\r/g, '');
+      obj[h] = v;
+    });
     return obj;
   });
 }
@@ -397,11 +434,11 @@ function renderCards(songs, selectedGenre = '', searchQuery = '', selectedArtist
     const artist = song['アーティスト'] || '';
     const card = document.createElement('div');
     card.className = 'song-card';
-    const titleHtml = `<div class="song-title">${truncateText(song['タイトル'] || '', 18)}</div>`;
-    const artistHtml = artist ? `<div class="song-artist">${truncateText(artist, 18)}</div>` : '';
+    const titleHtml = `<div class="song-title">${escapeHtml(song['タイトル'] || '')}</div>`;
+    const artistHtml = artist ? `<div class="song-artist">${escapeHtml(artist)}</div>` : '';
     const details = [];
-    if (work) details.push(`<span class="song-category">${truncateText(work, 16)}</span>`);
-    if (genre) details.push(`<span class="song-category">${truncateText(genre, 12)}</span>`);
+    if (work) details.push(`<span class="song-category">${escapeHtml(work)}</span>`);
+    if (genre) details.push(`<span class="song-category">${escapeHtml(genre)}</span>`);
     const detailsHtml = details.length ? `<div class="song-details">${details.join('')}</div>` : '';
     card.innerHTML = `
       <div class="song-icon">♪</div>
@@ -431,9 +468,13 @@ function filterSongs(songs) {
   });
 }
 
-function truncateText(text, maxLength) {
-  if (!text) return '';
-  return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+// Note: truncation is handled by CSS line-clamp; no JS truncation here.
+
+// HTML を安全に挿入するためのエスケープ
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"'`=\/]/g, function(s) {
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;','=':'&#61;','/':'&#47;'})[s];
+  });
 }
 
 fetch('songs.csv')

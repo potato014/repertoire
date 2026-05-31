@@ -259,14 +259,20 @@ img.youtube-thumb {
   color: #7f2f52;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 最大2行で省略 */
+  -webkit-box-orient: vertical;
+  white-space: normal;
 }
 .song-artist {
   color: #90546b;
   font-size: 0.97em;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* 1行で省略 */
+  -webkit-box-orient: vertical;
+  white-space: normal;
 }
 .song-details {
   display: flex;
@@ -282,7 +288,10 @@ img.youtube-thumb {
   font-size: 0.88em;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  white-space: normal;
 }
 .yt-link {
   display: inline-block;
