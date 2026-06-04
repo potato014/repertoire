@@ -477,7 +477,9 @@ function escapeHtml(str) {
   });
 }
 
-fetch('songs.csv')
+const SONGS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRAJDrPTQPutsgc-knfu0R7GhvQfJ09RcDu3qMxVRROQaZeJriynul5peNfpRtS5KLvX87DzsW1Uzzm/pub?output=csv';
+
+fetch(SONGS_CSV_URL)
   .then(res => res.text())
   .then(text => {
     const songs = parseCSV(text);
